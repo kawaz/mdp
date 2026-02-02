@@ -1,0 +1,7 @@
+{
+  "import": ["mizchi/markdown/tui"],
+  "is_main": true,
+  "targets": {
+    "io_js.mbt": ["js"]
+  }
+}

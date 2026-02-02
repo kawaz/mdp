@@ -1,0 +1,11 @@
+# MoonBit
+target/
+_build/
+.mooncakes/
+
+# npm
+node_modules/
+dist/
+
+# OS
+.DS_Store

@@ -1,0 +1,38 @@
+{
+  "name": "@kawaz/mdp",
+  "version": "0.1.0",
+  "description": "Terminal Markdown Preview CLI powered by MoonBit",
+  "bin": {
+    "mdp": "./bin/mdp.js"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "scripts": {
+    "build": "moon build --target js",
+    "test": "moon test --target js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "markdown",
+    "terminal",
+    "cli",
+    "tui",
+    "preview",
+    "moonbit"
+  ],
+  "author": "kawaz",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawaz/mdp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kawaz/mdp/issues"
+  },
+  "homepage": "https://github.com/kawaz/mdp#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
