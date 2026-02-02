@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: moonbitlang/setup-moonbit@v1
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: moon install
+
+      - name: Run tests
+        run: moon test --target js
+
+      - name: Build
+        run: |
+          moon build --target js
+          bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
+
+      - name: Verify CLI works
+        run: |
+          echo "# Test" | node bin/mdp.js

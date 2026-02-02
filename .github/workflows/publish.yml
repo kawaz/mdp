@@ -1,0 +1,55 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: moonbitlang/setup-moonbit@v1
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: moon install
+
+      - name: Run tests
+        run: moon test --target js
+
+      - name: Build
+        run: |
+          moon build --target js
+          bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
+
+      - name: Check version change
+        id: version
+        run: |
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+          NPM_VERSION=$(npm view @kawaz/mdp version 2>/dev/null || echo "0.0.0")
+          if [ "$CURRENT_VERSION" != "$NPM_VERSION" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Version changed from $NPM_VERSION to $CURRENT_VERSION"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Version unchanged: $CURRENT_VERSION"
+          fi
+
+      - name: Publish to npm
+        if: steps.version.outputs.changed == 'true'
+        run: npm publish --access public --provenance
