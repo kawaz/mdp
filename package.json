@@ -10,7 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "moon build --target js",
+    "build": "moon build --target js && bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node",
     "test": "moon test --target js",
     "prepublishOnly": "npm run build"
   },
@@ -20,7 +20,8 @@
     "cli",
     "tui",
     "preview",
-    "moonbit"
+    "moonbit",
+    "ansi"
   ],
   "author": "kawaz",
   "license": "MIT",

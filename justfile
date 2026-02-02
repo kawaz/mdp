@@ -2,34 +2,28 @@
 
 default: check test
 
-# Type check
 check:
     moon check
 
-# Run tests
 test:
     moon test --target js
 
-# Build for distribution
+# Build minified bundle
 build:
     moon build --target js
-    mkdir -p dist
-    cp -r _build/js/release/build/src dist/
+    bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
 
-# Format code
 fmt:
     moon fmt
 
-# Clean build artifacts
 clean:
     rm -rf _build target dist .mooncakes
 
-# Run locally
+# Run locally (dev)
 run *ARGS:
     moon build --target js
-    node _build/js/release/build/src/src.js {{ARGS}}
-
-# Run with bun (faster)
-run-bun *ARGS:
-    moon build --target js
     bun _build/js/release/build/src/src.js {{ARGS}}
+
+# Run minified version
+run-dist *ARGS:
+    node bin/mdp.js {{ARGS}}

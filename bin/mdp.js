@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/src/src.js');
+require('../dist/mdp.js');
