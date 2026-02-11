@@ -20,7 +20,10 @@ jobs:
           node-version: "lts/*"
           registry-url: "https://registry.npmjs.org"
 
-      - uses: hustcer/setup-moonbit@v1
+      - name: Install MoonBit CLI
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -29,8 +32,8 @@ jobs:
       - name: Clone forked markdown.mbt (path dependency)
         run: git clone --depth 1 https://github.com/kawaz/markdown.mbt.git ../markdown.mbt
 
-      - name: Update registry
-        run: moon update
+      - name: Install dependencies
+        run: moon update && moon install || true
 
       - name: Run tests
         run: moon test --target js
