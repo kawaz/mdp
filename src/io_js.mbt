@@ -1,11 +1,13 @@
 ///| File reading FFI (JS/Bun)
+///| Returns file content on success, or "\0" on failure (error details printed to stderr).
 extern "js" fn read_file_sync(path : String) -> String =
   #| (path) => {
   #|   const fs = require('node:fs');
   #|   try {
   #|     return fs.readFileSync(path, 'utf-8');
   #|   } catch (e) {
-  #|     return '';
+  #|     process.stderr.write('Error: ' + (e.message || String(e)) + '\n');
+  #|     return '\0';
   #|   }
   #| }
 

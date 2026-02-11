@@ -1,6 +1,6 @@
 {
   "name": "@kawaz/mdp",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Terminal Markdown Preview CLI powered by MoonBit",
   "bin": {
     "mdp": "./bin/mdp.js"
@@ -36,6 +36,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "type": "module",
   "publishConfig": {
     "access": "public"
   }
