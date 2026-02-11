@@ -31,9 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          git clone --depth 1 https://github.com/kawaz/markdown.mbt.git ../markdown.mbt
           moon update
-          mkdir -p .mooncakes/mizchi
-          git clone --depth 1 https://github.com/kawaz/markdown.mbt.git .mooncakes/mizchi/markdown
           moon install || true
 
       - name: Run tests
