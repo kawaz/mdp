@@ -30,7 +30,7 @@ jobs:
         run: git clone --depth 1 https://github.com/kawaz/markdown.mbt.git ../markdown.mbt
 
       - name: Install dependencies
-        run: moon install
+        run: moon update && moon install
 
       - name: Run tests
         run: moon test --target js
