@@ -21,20 +21,14 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Clone forked markdown.mbt (path dependency)
+      - name: Clone forked markdown.mbt
         run: git clone --depth 1 https://github.com/kawaz/markdown.mbt.git ../markdown.mbt
 
       - name: Install dependencies
-        run: moon update && moon install || true
-
-      - name: Debug dependency resolution
         run: |
-          pwd
-          ls -la ../
-          ls -la ../markdown.mbt/ || true
-          cat moon.mod.json
-          ls -la .mooncakes/mizchi/markdown/ || true
-          cat .mooncakes/mizchi/markdown/moon.mod.json || true
+          moon update
+          mkdir -p .mooncakes/mizchi
+          ln -s "$(realpath ../markdown.mbt)" .mooncakes/mizchi/markdown
 
       - name: Run tests
         run: moon test --target js
