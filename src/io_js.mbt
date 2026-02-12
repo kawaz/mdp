@@ -16,19 +16,36 @@ extern "js" fn get_args() -> Array[String] =
   #| () => process.argv.slice(2)
 
 ///| Read from stdin
+///| Uses chunked readSync with EAGAIN retry to handle non-blocking fd 0.
+///| Design rationale: Node.js sets fd 0 to non-blocking mode when process.stdin
+///| is accessed (e.g. via isTTY). readFileSync(0) does not retry on EAGAIN,
+///| causing silent empty reads on large piped input. Manual readSync loop with
+///| EAGAIN retry avoids this.
 extern "js" fn read_stdin_sync() -> String =
   #| () => {
   #|   const fs = require('node:fs');
-  #|   try {
-  #|     return fs.readFileSync(0, 'utf-8');
-  #|   } catch (e) {
-  #|     return '';
+  #|   const chunks = [];
+  #|   const buf = Buffer.allocUnsafe(65536);
+  #|   for (;;) {
+  #|     try {
+  #|       const n = fs.readSync(0, buf, 0, buf.length);
+  #|       if (n === 0) break;
+  #|       chunks.push(Uint8Array.prototype.slice.call(buf, 0, n));
+  #|     } catch (e) {
+  #|       if (e.code === 'EAGAIN') { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1); continue; }
+  #|       if (e.code === 'EOF') break;
+  #|       return '';
+  #|     }
   #|   }
+  #|   return Buffer.concat(chunks).toString('utf-8');
   #| }
 
 ///| Check if stdin has data (is piped)
+///| Design rationale: process.stdin.isTTY switches fd 0 to non-blocking mode,
+///| breaking subsequent readFileSync/readSync. tty.isatty(0) checks without
+///| side effects.
 extern "js" fn stdin_is_piped() -> Bool =
-  #| () => !process.stdin.isTTY
+  #| () => !require('node:tty').isatty(0)
 
 ///| Print without newline
 extern "js" fn print_raw(s : String) -> Unit =
