@@ -31,9 +31,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          git clone --depth 1 https://github.com/mizchi/syntree.mbt.git ../syntree.mbt
           git clone --depth 1 https://github.com/kawaz/markdown.mbt.git ../markdown.mbt
+          (cd ../markdown.mbt && moon update)
           moon update
-          moon install || true
 
       - name: Run tests
         run: moon test --target js
