@@ -33,8 +33,7 @@ jobs:
 
       - name: Build
         run: |
-          moon build --target js
-          find _build -name '*.js' -type f || true
+          moon build --target js --release
           bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
 
       - name: Verify CLI works

@@ -41,7 +41,7 @@ jobs:
 
       - name: Build
         run: |
-          moon build --target js
+          moon build --target js --release
           bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
 
       - name: Check version change
