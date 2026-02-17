@@ -1,6 +1,6 @@
 {
   "name": "kawaz/mdp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "deps": {
     "mizchi/markdown": {
       "path": "../markdown.mbt"
@@ -10,6 +10,12 @@
   "readme": "README.md",
   "repository": "https://github.com/kawaz/mdp",
   "license": "MIT",
-  "keywords": ["markdown", "terminal", "cli", "tui", "preview"],
+  "keywords": [
+    "markdown",
+    "terminal",
+    "cli",
+    "tui",
+    "preview"
+  ],
   "description": "Terminal Markdown Preview CLI powered by MoonBit"
 }
