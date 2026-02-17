@@ -47,6 +47,10 @@ extern "js" fn read_stdin_sync() -> String =
 extern "js" fn stdin_is_piped() -> Bool =
   #| () => !require('node:tty').isatty(0)
 
+///| Get version (injected at build time via bun build --define)
+extern "js" fn get_version() -> String =
+  #| () => __MDP_VERSION__
+
 ///| Print without newline
 extern "js" fn print_raw(s : String) -> Unit =
   #| (s) => process.stdout.write(s)

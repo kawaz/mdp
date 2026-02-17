@@ -10,8 +10,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "moon build --target js && bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node",
+    "build": "moon build --target js --release && V=$(node -p \"require('./package.json').version\") && bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node --define \"__MDP_VERSION__='$V'\"",
     "test": "moon test --target js",
+    "version": "node -e \"const p=require('./package.json'),fs=require('fs'),m=JSON.parse(fs.readFileSync('moon.mod.json','utf-8'));m.version=p.version;fs.writeFileSync('moon.mod.json',JSON.stringify(m,null,2)+'\\n')\" && git add moon.mod.json",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

@@ -12,7 +12,7 @@ fn main {
       return
     }
     if arg == "-v" || arg == "--version" {
-      println("mdp 0.1.0")
+      println("mdp " + get_version())
       return
     }
     if arg == "--cjk-width" {
