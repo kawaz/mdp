@@ -5,7 +5,7 @@ fn main {
 
   // Parse options
   let mut cjk = false
-  let mut file_arg : String? = None
+  let files : Array[String] = []
   for arg in args {
     if arg == "-h" || arg == "--help" {
       print_usage()
@@ -18,42 +18,41 @@ fn main {
     if arg == "--cjk-width" {
       cjk = true
     } else {
-      file_arg = Some(arg)
+      files.push(arg)
     }
   }
 
-  // Get markdown source
-  let source : String = match file_arg {
-    Some(path) => {
+  let options = @tui.TuiOptions::with_str_width(fn(s) {
+    @unicodewidth.str_width(s.view(), cjk~)
+  })
+
+  if files.is_empty() {
+    if stdin_is_piped() {
+      let source = read_stdin_sync()
+      setup_pager()
+      print_raw(@tui.from_markdown_with_options(source, options))
+    } else {
+      print_usage()
+      return
+    }
+  } else {
+    for path in files {
       let content = read_file_sync(path)
       if content.has_prefix("\u0000") {
         println("Error: Cannot read file: " + path)
         return
       }
-      content
+      setup_pager() // idempotent: no-op after first call
+      print_raw(@tui.from_markdown_with_options(content, options))
     }
-    None =>
-      if stdin_is_piped() {
-        read_stdin_sync()
-      } else {
-        print_usage()
-        return
-      }
   }
-
-  // Render markdown to terminal with Unicode-aware width calculation
-  let options = @tui.TuiOptions::with_str_width(fn(s) {
-    @unicodewidth.str_width(s.view(), cjk~)
-  })
-  let output = @tui.from_markdown_with_options(source, options)
-  print_raw(output)
 }
 
 fn print_usage() -> Unit {
   println("mdp - Terminal Markdown Preview")
   println("")
   println("Usage:")
-  println("  mdp <file.md>        Preview markdown file")
+  println("  mdp <file.md> ...    Preview markdown file(s)")
   println("  cat file.md | mdp    Preview from stdin")
   println("")
   println("Options:")

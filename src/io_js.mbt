@@ -54,3 +54,33 @@ extern "js" fn get_version() -> String =
 ///| Print without newline
 extern "js" fn print_raw(s : String) -> Unit =
   #| (s) => process.stdout.write(s)
+
+///| Setup PAGER if stdout is a TTY and PAGER env var is set.
+///| Spawns the pager process and redirects stdout to its stdin.
+///| The pager reference is stored on globalThis.__mdp_pager for cleanup by the launcher.
+extern "js" fn setup_pager() -> Unit =
+  #| () => {
+  #|   if (!process.stdout.isTTY || !process.env.PAGER || globalThis.__mdp_pager) return;
+  #|   const { spawn } = require('node:child_process');
+  #|   if (!process.env.LESS) process.env.LESS = '-R';
+  #|   try {
+  #|     const pager = spawn(process.env.PAGER, [], {
+  #|       stdio: ['pipe', 'inherit', 'inherit'],
+  #|       shell: true,
+  #|     });
+  #|     const origWrite = process.stdout.write.bind(process.stdout);
+  #|     const restoreStdout = () => {
+  #|       process.stdout.write = origWrite;
+  #|       globalThis.__mdp_pager = undefined;
+  #|     };
+  #|     pager.on('error', restoreStdout);
+  #|     pager.stdin.on('error', () => {});
+  #|     process.stdout.write = function(chunk, encoding, callback) {
+  #|       if (pager.stdin && !pager.stdin.destroyed) {
+  #|         return pager.stdin.write(chunk, encoding, callback);
+  #|       }
+  #|       return origWrite(chunk, encoding, callback);
+  #|     };
+  #|     globalThis.__mdp_pager = pager;
+  #|   } catch {}
+  #| }
