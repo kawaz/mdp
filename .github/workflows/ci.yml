@@ -17,6 +17,8 @@ jobs:
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
+      - uses: extractions/setup-just@v2
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -32,9 +34,7 @@ jobs:
         run: moon test --target js
 
       - name: Build
-        run: |
-          moon build --target js --release
-          bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
+        run: just build
 
       - name: Verify CLI works
         run: |
