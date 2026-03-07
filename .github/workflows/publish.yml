@@ -1,4 +1,4 @@
-name: Publish to npm
+name: Publish
 
 on:
   push:
@@ -7,18 +7,13 @@ on:
       - "package.json"
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
+    outputs:
+      version: ${{ steps.version.outputs.current }}
+      changed: ${{ steps.version.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install MoonBit CLI
         run: |
@@ -40,9 +35,7 @@ jobs:
         run: moon test --target js
 
       - name: Build
-        run: |
-          moon build --target js --release
-          bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
+        run: npm run build
 
       - name: Check version change
         id: version
@@ -56,7 +49,60 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "Version unchanged: $CURRENT_VERSION"
           fi
+          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - uses: actions/upload-artifact@v4
+        if: steps.version.outputs.changed == 'true'
+        with:
+          name: dist
+          path: dist/
+
+  npm-publish:
+    needs: build
+    if: needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
       - name: Publish to npm
-        if: steps.version.outputs.changed == 'true'
         run: npm publish --access public --provenance
+
+  github-release:
+    needs: [build, npm-publish]
+    if: needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          cp dist/mdp.bundle.js "dist/mdp-${VERSION}"
+          gh release create "v${VERSION}" \
+            "dist/mdp-${VERSION}" \
+            --title "v${VERSION}" \
+            --target "$COMMIT_SHA" \
+            --generate-notes
