@@ -1,6 +1,6 @@
 {
   "name": "kawaz/mdp",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "deps": {
     "mizchi/markdown": {
       "path": "../markdown.mbt"
