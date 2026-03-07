@@ -1,6 +1,6 @@
 {
   "name": "@kawaz/mdp",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Terminal Markdown Preview CLI powered by MoonBit",
   "bin": {
     "mdp": "./bin/mdp.js"
