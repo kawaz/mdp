@@ -1,5 +1,5 @@
-///| mdp - Terminal Markdown Preview CLI
-
+///|
+/// mdp - Terminal Markdown Preview CLI
 fn main {
   let args = get_args()
 
@@ -48,6 +48,7 @@ fn main {
   }
 }
 
+///|
 fn print_usage() -> Unit {
   println("mdp - Terminal Markdown Preview")
   println("")
@@ -56,7 +57,9 @@ fn print_usage() -> Unit {
   println("  cat file.md | mdp    Preview from stdin")
   println("")
   println("Options:")
-  println("  --cjk-width          Treat ambiguous-width characters as wide (2 columns)")
+  println(
+    "  --cjk-width          Treat ambiguous-width characters as wide (2 columns)",
+  )
   println("  -h, --help           Show this help")
   println("  -v, --version        Show version")
 }

@@ -1,17 +1,16 @@
 # mdp - Terminal Markdown Preview CLI
 
-default: check test
+default: fmt check test
 
 check:
-    moon check
+    moon check --target js
 
 test:
     moon test --target js
 
 # Build minified bundle
 build:
-    moon build --target js
-    bun build _build/js/release/build/src/src.js --outfile=dist/mdp.js --minify --target=node
+    bun run build
 
 fmt:
     moon fmt
@@ -21,7 +20,7 @@ clean:
 
 # Run locally (dev)
 run *ARGS:
-    moon build --target js
+    moon build --target js --release
     bun _build/js/release/build/src/src.js {{ARGS}}
 
 # Run minified version

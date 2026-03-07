@@ -1,7 +1,0 @@
-{
-  "import": ["mizchi/markdown/tui", "rami3l/unicodewidth"],
-  "is_main": true,
-  "targets": {
-    "io_js.mbt": ["js"]
-  }
-}

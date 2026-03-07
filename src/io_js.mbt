@@ -1,5 +1,7 @@
 ///| File reading FFI (JS/Bun)
-///| Returns file content on success, or "\0" on failure (error details printed to stderr).
+
+///|
+/// Returns file content on success, or "\0" on failure (error details printed to stderr).
 extern "js" fn read_file_sync(path : String) -> String =
   #| (path) => {
   #|   const fs = require('node:fs');
@@ -11,16 +13,23 @@ extern "js" fn read_file_sync(path : String) -> String =
   #|   }
   #| }
 
-///| Get command line arguments
+///|
+/// Get command line arguments
 extern "js" fn get_args() -> Array[String] =
   #| () => process.argv.slice(2)
 
 ///| Read from stdin
+
 ///| Uses chunked readSync with EAGAIN retry to handle non-blocking fd 0.
+
 ///| Design rationale: Node.js sets fd 0 to non-blocking mode when process.stdin
+
 ///| is accessed (e.g. via isTTY). readFileSync(0) does not retry on EAGAIN,
+
 ///| causing silent empty reads on large piped input. Manual readSync loop with
-///| EAGAIN retry avoids this.
+
+///|
+/// EAGAIN retry avoids this.
 extern "js" fn read_stdin_sync() -> String =
   #| () => {
   #|   const fs = require('node:fs');
@@ -41,23 +50,32 @@ extern "js" fn read_stdin_sync() -> String =
   #| }
 
 ///| Check if stdin has data (is piped)
+
 ///| Design rationale: process.stdin.isTTY switches fd 0 to non-blocking mode,
+
 ///| breaking subsequent readFileSync/readSync. tty.isatty(0) checks without
-///| side effects.
+
+///|
+/// side effects.
 extern "js" fn stdin_is_piped() -> Bool =
   #| () => !require('node:tty').isatty(0)
 
-///| Get version (injected at build time via bun build --define)
+///|
+/// Get version (injected at build time via bun build --define)
 extern "js" fn get_version() -> String =
   #| () => __MDP_VERSION__
 
-///| Print without newline
+///|
+/// Print without newline
 extern "js" fn print_raw(s : String) -> Unit =
   #| (s) => process.stdout.write(s)
 
 ///| Setup PAGER if stdout is a TTY and PAGER env var is set.
+
 ///| Spawns the pager process and redirects stdout to its stdin.
-///| The pager reference is stored on globalThis.__mdp_pager for cleanup by the launcher.
+
+///|
+/// The pager reference is stored on globalThis.__mdp_pager for cleanup by the launcher.
 extern "js" fn setup_pager() -> Unit =
   #| () => {
   #|   if (!process.stdout.isTTY || !process.env.PAGER || globalThis.__mdp_pager) return;
