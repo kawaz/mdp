@@ -80,19 +80,23 @@ extern "js" fn eprintln(s : String) -> Unit =
 extern "js" fn set_exit_code(code : Int) -> Unit =
   #| (code) => { process.exitCode = code; }
 
-///| Setup PAGER if stdout is a TTY and PAGER env var is set.
+///| Setup PAGER if stdout is a TTY.
 
-///| Spawns the pager process and redirects stdout to its stdin.
+///| Uses PAGER env var, falling back to 'less' if available.
 
 ///|
 /// The pager reference is stored on globalThis.__mdp_pager for cleanup by the launcher.
 extern "js" fn setup_pager() -> Unit =
   #| () => {
-  #|   if (!process.stdout.isTTY || !process.env.PAGER || globalThis.__mdp_pager) return;
+  #|   if (!process.stdout.isTTY || globalThis.__mdp_pager) return;
+  #|   let pagerCmd = process.env.PAGER;
+  #|   if (!pagerCmd) {
+  #|     try { require('node:child_process').execFileSync('less', ['--version'], { stdio: 'ignore' }); pagerCmd = 'less'; } catch { return; }
+  #|   }
   #|   const { spawn } = require('node:child_process');
   #|   if (!process.env.LESS) process.env.LESS = '-R';
   #|   try {
-  #|     const pager = spawn(process.env.PAGER, [], {
+  #|     const pager = spawn(pagerCmd, [], {
   #|       stdio: ['pipe', 'inherit', 'inherit'],
   #|       shell: true,
   #|     });
