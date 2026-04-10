@@ -66,11 +66,11 @@ Requires [MoonBit](https://moonbitlang.com) toolchain.
 # Build
 just build
 
-# Run locally
+# Run locally (uses Bun)
 just run README.md
 
-# Run with Bun
-just run-bun README.md
+# Run minified version (uses Node.js)
+just run-dist README.md
 ```
 
 ## License
