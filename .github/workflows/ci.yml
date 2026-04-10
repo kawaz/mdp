@@ -39,3 +39,12 @@ jobs:
       - name: Verify CLI works
         run: |
           echo "# Test" | node bin/mdp.js
+          # Unknown option should fail with exit code 1
+          node bin/mdp.js --bad-option 2>/dev/null && exit 1 || test $? -eq 1
+          # -- separator should work
+          echo "# Dash" > /tmp/-dash-file.md
+          node bin/mdp.js -- /tmp/-dash-file.md | grep -q Dash
+          # Multiple files with error should still process valid files
+          echo "# A" > /tmp/a.md
+          output=$(node bin/mdp.js /tmp/a.md /tmp/nonexistent-xyz.md 2>/dev/null || true)
+          echo "$output" | grep -q A
