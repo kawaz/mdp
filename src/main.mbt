@@ -27,9 +27,10 @@ fn main {
     if arg == "--cjk-width" {
       cjk = true
     } else if arg.has_prefix("-") {
-      println("Error: Unknown option: " + arg)
+      eprintln("Error: Unknown option: " + arg)
       println("")
       print_usage()
+      set_exit_code(1)
       return
     } else {
       files.push(arg)
@@ -53,8 +54,9 @@ fn main {
     for path in files {
       let content = read_file_sync(path)
       if content.has_prefix("\u0000") {
-        println("Error: Cannot read file: " + path)
-        return
+        eprintln("Error: Cannot read file: " + path)
+        set_exit_code(1)
+        continue
       }
       setup_pager() // idempotent: no-op after first call
       print_raw(@tui.from_markdown_with_options(content, options))

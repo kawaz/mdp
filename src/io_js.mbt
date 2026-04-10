@@ -70,6 +70,16 @@ extern "js" fn get_version() -> String =
 extern "js" fn print_raw(s : String) -> Unit =
   #| (s) => process.stdout.write(s)
 
+///|
+/// Print to stderr
+extern "js" fn eprintln(s : String) -> Unit =
+  #| (s) => process.stderr.write(s + '\n')
+
+///|
+/// Set process exit code without immediately exiting
+extern "js" fn set_exit_code(code : Int) -> Unit =
+  #| (code) => { process.exitCode = code; }
+
 ///| Setup PAGER if stdout is a TTY and PAGER env var is set.
 
 ///| Spawns the pager process and redirects stdout to its stdin.
