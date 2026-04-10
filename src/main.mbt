@@ -44,6 +44,11 @@ fn main {
   if files.is_empty() {
     if stdin_is_piped() {
       let source = read_stdin_sync()
+      if source.has_prefix("\u0000") {
+        eprintln("Error: Cannot read stdin")
+        set_exit_code(1)
+        return
+      }
       setup_pager()
       print_raw(@tui.from_markdown_with_options(source, options))
     } else {

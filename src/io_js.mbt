@@ -43,7 +43,8 @@ extern "js" fn read_stdin_sync() -> String =
   #|     } catch (e) {
   #|       if (e.code === 'EAGAIN') { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1); continue; }
   #|       if (e.code === 'EOF') break;
-  #|       return '';
+  #|       process.stderr.write('Error: ' + (e.message || String(e)) + '\n');
+  #|       return '\0';
   #|     }
   #|   }
   #|   return Buffer.concat(chunks).toString('utf-8');
