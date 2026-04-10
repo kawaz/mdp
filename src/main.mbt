@@ -6,7 +6,16 @@ fn main {
   // Parse options
   let mut cjk = false
   let files : Array[String] = []
+  let mut opts_done = false
   for arg in args {
+    if opts_done {
+      files.push(arg)
+      continue
+    }
+    if arg == "--" {
+      opts_done = true
+      continue
+    }
     if arg == "-h" || arg == "--help" {
       print_usage()
       return
@@ -17,6 +26,11 @@ fn main {
     }
     if arg == "--cjk-width" {
       cjk = true
+    } else if arg.has_prefix("-") {
+      println("Error: Unknown option: " + arg)
+      println("")
+      print_usage()
+      return
     } else {
       files.push(arg)
     }
@@ -62,4 +76,6 @@ fn print_usage() -> Unit {
   )
   println("  -h, --help           Show this help")
   println("  -v, --version        Show version")
+  println("")
+  println("Use -- to separate options from filenames starting with -")
 }
