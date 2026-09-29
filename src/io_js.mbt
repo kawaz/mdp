@@ -15,8 +15,12 @@ extern "js" fn read_file_sync(path : String) -> String =
 
 ///|
 /// Get command line arguments
-extern "js" fn get_args() -> Array[String] =
+extern "js" fn get_args_ffi() -> FixedArray[String] =
   #| () => process.argv.slice(2)
+
+fn get_args() -> Array[String] {
+  Array::from_fixed_array(get_args_ffi())
+}
 
 ///| Read from stdin
 
